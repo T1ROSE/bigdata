@@ -1,0 +1,2945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清廉新区 - 核心功能展示平台</title>
+    
+    <!-- 引入Font Awesome图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 统一Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF', // 主色调-蓝色
+                        secondary: '#0FC6C2', // 辅助色-青绿色
+                        success: '#00B42A', // 成功色-绿色
+                        warning: '#FF7D00', // 警告色-橙色
+                        danger: '#F53F3F',  // 危险色-红色
+                        accent: '#8b5cf6',   // 强调色-紫色
+                        gray: {
+                            50: '#F2F3F5',
+                            100: '#E5E6EB',
+                            200: '#C9CDD4',
+                            300: '#86909C',
+                            400: '#4E5969',
+                            500: '#1D2129',
+                        }
+                    },
+                    boxShadow: {
+                        'card': '0 2px 14px 0 rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12)',
+                    },
+                    transitionProperty: {
+                        'height': 'height',
+                        'spacing': 'margin, padding',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2;
+            }
+            .btn-secondary {
+                @apply bg-white border border-gray-100 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2;
+            }
+            .btn-outline {
+                @apply bg-white border border-primary text-primary px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors flex items-center gap-2;
+            }
+            .input-default {
+                @apply w-full px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary placeholder:text-gray-300 transition-colors;
+            }
+            .table-cell {
+                @apply px-6 py-4 text-gray-400;
+            }
+            .table-header {
+                @apply px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider;
+            }
+            .page-container {
+                @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+            }
+        }
+    </style>
+    
+    <!-- 基础样式 -->
+    <style>
+        /* 基础样式重置 */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #F7F8FA;
+        }
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F2F3F5;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C9CDD4;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #86909C;
+        }
+        
+        /* 模态框动画 */
+        .modal-enter {
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* 通知提示动画 */
+        .toast-enter {
+            animation: toastSlideIn 0.3s ease-out forwards;
+        }
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 数据删除动画 */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* 模型卡片样式 */
+        .model-card {
+            @apply border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center transition-all duration-300 hover:border-primary/30 hover:bg-gray-50;
+        }
+        
+        /* 全局统一比对思路样式 */
+        .model-idea {
+            @apply text-sm text-gray-300 mb-3 line-clamp-2 !important;
+        }
+        
+        /* 嵌入式监督样式 */
+        .embedded-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            margin-left: 10px;
+        }
+        
+        .embedded-btn-primary {
+            background-color: #409eff;
+            color: #fff;
+        }
+        
+        .embedded-btn-primary:hover {
+            background-color: #337ecc;
+        }
+        
+        .embedded-btn-danger {
+            background-color: #f56c6c;
+            color: #fff;
+        }
+        
+        .embedded-btn-danger:hover {
+            background-color: #e45656;
+        }
+        
+        .embedded-btn-default {
+            background-color: #e6e6e6;
+            color: #333;
+        }
+        
+        .embedded-btn-default:hover {
+            background-color: #dcdcdc;
+        }
+        
+        /* 功能卡片样式 */
+        .function-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e8f4f8;
+            position: relative;
+        }
+        
+        .function-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            border-color: #409eff;
+        }
+        
+        /* 卡片操作按钮 */
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none;
+        }
+        
+        .function-card:hover .card-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .card-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+            background-color: #f5f5f5;
+        }
+        
+        .card-action-btn.edit {
+            color: #409eff;
+        }
+        
+        .card-action-btn.delete {
+            color: #f56c6c;
+        }
+        
+        .card-action-btn:hover {
+            background-color: #e8f4f8;
+        }
+        
+        /* 图标容器 */
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 嵌入式模块图标颜色 */
+        .icon-blue {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8fb 100%);
+        }
+        
+        .icon-blue i {
+            color: #409eff;
+        }
+        
+        .icon-green {
+            background: linear-gradient(135deg, #e8f8f4 0%, #f0fbf8 100%);
+        }
+        
+        .icon-green i {
+            color: #10b981;
+        }
+        
+        .icon-purple {
+            background: linear-gradient(135deg, #f4e8f8 0%, #f8f0fb 100%);
+        }
+        
+        .icon-purple i {
+            color: #8b5cf6;
+        }
+        
+        .icon-red {
+            background: linear-gradient(135deg, #f8e8e8 0%, #fbf0f0 100%);
+        }
+        
+        .icon-red i {
+            color: #ef4444;
+        }
+        
+        .icon-orange {
+            background: linear-gradient(135deg, #f8f4e8 0%, #fbf8f0 100%);
+        }
+        
+        .icon-orange i {
+            color: #f97316;
+        }
+        
+        .card-icon i {
+            font-size: 40px;
+        }
+        
+        /* 卡片文字 */
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 10px;
+        }
+        
+        .card-desc {
+            font-size: 14px;
+            color: #909399;
+            line-height: 1.5;
+        }
+        
+        /* 嵌入式模态框样式 */
+        .embedded-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .embedded-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .embedded-modal-content {
+            background-color: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .embedded-modal.show .embedded-modal-content {
+            transform: translateY(0);
+        }
+        
+        .embedded-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .embedded-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .close-embedded-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+        
+        .close-embedded-modal:hover {
+            color: #333;
+        }
+        
+        .embedded-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .embedded-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .embedded-form-input, .embedded-form-textarea, .embedded-form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #606266;
+            transition: border-color 0.2s ease;
+        }
+        
+        .embedded-form-input:focus, .embedded-form-textarea:focus, .embedded-form-select:focus {
+            outline: none;
+            border-color: #409eff;
+        }
+        
+        .embedded-form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .embedded-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .function-container {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+            
+            .function-card {
+                padding: 25px 15px;
+            }
+            
+            .card-icon {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .card-icon i {
+                font-size: 35px;
+            }
+            
+            .embedded-modal-content {
+                padding: 20px;
+            }
+        }
+		
+		@font-face {
+		    font-family: 'Source Han Sans CN';
+		    src: url('./fonts/SourceHanSansCN-Regular.otf') format('opentype');
+		    font-weight: normal;
+		    font-style: normal;
+		}
+		@font-face {
+		    font-family: 'Source Han Sans CN';
+		    src: url('./fonts/SourceHanSansCN-Bold.otf') format('opentype');
+		    font-weight: bold;
+		    font-style: normal;
+		}
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 首页：整个页面的容器（min-h-screen 占满视口） -->
+    <section id="home" class="min-h-screen flex flex-col relative">
+        <!-- 🔥 全页面背景图：放在section内最顶部，覆盖整个页面 -->
+        <div class="absolute inset-0 bg-cover bg-center bg-black/20 z-0" style="background-image: url('./xihaian.jpg');"></div>
+
+        <!-- 顶部导航栏：z-10 保证在背景图之上 -->
+        <header class="bg-gray-800/40 text-gray-100 shadow-sm sticky top-0 z-10">
+            <div class="page-container py-1 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-primary flex items-center">
+					<!-- 外层容器：正方形尺寸 + 圆形裁剪 + 溢出隐藏 -->
+					<div class="w-12 h-12 rounded-full overflow-hidden mr-2">
+						<img 
+							src="./qinglian.jpg"  
+							alt="清廉新区图标"     
+							class="w-full h-full object-cover"  <!-- 填满容器 + 只显示中间部分 -->
+						>
+					</div>
+                    <span class="font-['Microsoft_YaHei'] tracking-[0.12em] font-medium text-white">清廉新区</span>
+                </h1>
+                <nav>
+                    <ul class="flex space-x-6">
+						<li><span class="font-['Microsoft_YaHei'] text-white font-medium">亲清和畅岛</span></li>
+						<li><span class="font-['Microsoft_YaHei'] text-white font-medium">勤廉西海岸</span></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- 主内容区域：z-10 保证在背景图之上 -->
+        <main class="flex-grow py-12 relative z-10">
+            <!-- 页面标题 -->
+            <div class="page-container mb-10 text-center">
+				<h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold font-['Microsoft_YaHei'] text-white mb-4 tracking-[0.1em]">
+					大数据监督平台
+				</h2>	
+				<p class="font-['Microsoft_YaHei'] text-white max-w-2xl mx-auto text-lg">
+					三大核心功能模块，覆盖全场景需求
+				</p>
+            </div>
+
+            <!-- 功能卡片区域 -->
+            <div class="page-container grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 数据库模块卡片 -->
+                <div class="bg-white/50 rounded-xl shadow-md overflow-hidden card-hover cursor-pointer" onclick="showSection('database')">
+                    <div class="h-48 bg-primary/5 flex items-center justify-center">
+                        <i class="fas fa-database text-6xl text-primary"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">基础信息模块</h3>
+                        <p class="text-gray-600 mb-4">
+                            高效人员数据存储与管理，支持多源数据整合与快速查询。
+                        </p>
+                        <div class="inline-block bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                            查看详情 <i class="fas fa-arrow-right ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 大数据监督模型卡片 -->
+                <div class="bg-white/50 rounded-xl shadow-md overflow-hidden card-hover cursor-pointer" onclick="showSection('bigdata')">
+                    <div class="h-48 bg-secondary/10 flex items-center justify-center">
+                        <i class="fas fa-shield-halved text-6xl text-secondary"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">监督模型模块</h3>
+                        <p class="text-gray-600 mb-4">
+                            基于海量数据构建智能监督模型，实时及时异常检测与趋势预测。
+                        </p>
+                        <div class="inline-block bg-secondary text-white px-5 py-2 rounded-lg hover:bg-secondary/90 transition-colors">
+                            查看详情 <i class="fas fa-arrow-right ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 嵌入式监督模块卡片 -->
+                <div class="bg-white/50 rounded-xl shadow-md overflow-hidden card-hover cursor-pointer" onclick="showSection('embedded')">
+                    <div class="h-48 bg-accent/10 flex items-center justify-center">
+                        <i class="fas fa-microchip text-6xl text-accent"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900">嵌入监督模块</h3>
+                        <p class="text-gray-600 mb-4">
+                            轻量化嵌入式设计，支持边缘设备实时数据处理与本地决策。
+                        </p>
+                        <div class="inline-block bg-accent text-white px-5 py-2 rounded-lg hover:bg-accent/90 transition-colors">
+                            查看详情 <i class="fas fa-arrow-right ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+</body>
+
+    <!-- 人员数据库模块 -->
+    <section id="database" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <!-- 页面头部 -->
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('home')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回首页
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">人员数据库管理</h2>
+                </div>
+                <!-- 新增数据库按钮 -->
+                <button class="btn-primary shadow-sm" onclick="openAddDatabaseModal()">
+                    <i class="fa-solid fa-plus"></i> 新增数据库
+                </button>
+            </div>
+
+            <!-- Excel导入区域 -->
+            <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-500 mb-2">Excel数据导入</h3>
+                        <p class="text-gray-300 text-sm">支持批量导入各类人员数据，格式为.xlsx/.xls</p>
+                    </div>
+                    <!-- 导入按钮组 -->
+                    <div class="flex flex-wrap gap-3">
+                        <!-- 通用导入按钮 -->
+                        <label class="btn-primary cursor-pointer shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i>
+                            选择Excel文件
+                            <input type="file" accept=".xlsx,.xls" class="hidden" id="excelUpload" onchange="handleExcelUpload(this)">
+                        </label>
+                        <!-- 模板下载按钮 -->
+                        <button class="btn-secondary">
+                            <i class="fa-solid fa-download"></i>
+                            下载模板
+                        </button>
+                    </div>
+                </div>
+                <!-- 导入状态提示 -->
+                <div id="uploadStatus" class="mt-4 hidden p-3 rounded-lg bg-success/5 text-success flex items-center gap-2 toast-enter">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Excel文件导入成功！共导入 3 条数据</span>
+                </div>
+            </div>
+
+            <!-- 7类人员库卡片 -->
+            <div id="databaseCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- 公职人员库 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="dbCard1">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-user-tie text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">公职人员库</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(1, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">包含机关单位公职人员基础信息、任职情况等</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：120 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel1')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 事业编制人员库 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="dbCard2">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-user-graduate text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">事业编制人员库</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(2, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">包含事业单位在编人员信息、薪资待遇等</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：85 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel2')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 合同制人员库 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="dbCard3">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-user-clock text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">合同制人员库</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(3, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">包含各类合同制、聘用制人员信息</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：56 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel3')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 教育系统管理人员库 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="dbCard4">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-chalkboard-user text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">教育系统管理人员库</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(4, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">包含各级学校管理人员、教职工信息</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：98 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel4')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 村社干部及家属库 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="dbCard5">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-users-line text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">村社干部及家属库</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(5, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">包含村社干部及其直系亲属基础信息</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：210 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel5')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 死亡人员库 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="dbCard6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-user-slash text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">死亡人员库</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(6, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">包含户籍注销、死亡登记人员信息</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：45 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel6')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 低保救助人员库 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="dbCard7">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-hand-holding-heart text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">低保救助人员库</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(7, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">包含低保、特困、临时救助人员信息</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：156 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel7')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 新增/编辑数据库模态框 -->
+            <div id="databaseModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+                <div class="bg-white rounded-xl p-6 w-full max-w-md modal-enter">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 id="databaseModalTitle" class="text-xl font-bold text-gray-500">新增数据库</h3>
+                        <button class="text-gray-200 hover:text-gray-400 p-1 rounded-full hover:bg-gray-50 transition-colors" onclick="closeDatabaseModal()">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <form id="databaseForm">
+                        <input type="hidden" id="dbId">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5">数据库名称</label>
+                            <input type="text" id="dbName" class="input-default" placeholder="请输入数据库名称">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5">数据库描述</label>
+                            <textarea id="dbDesc" class="input-default" rows="3" placeholder="请输入数据库描述"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5">数据条数</label>
+                            <input type="number" id="dbCount" class="input-default" placeholder="请输入数据条数" min="0">
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <button type="button" class="btn-secondary" onclick="closeDatabaseModal()">取消</button>
+                            <button type="submit" class="btn-primary shadow-sm">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 大数据监督模型模块 -->
+    <section id="bigdata" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <!-- 大数据监督模型主页面 -->
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('home')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回首页
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">大数据监督模型</h2>
+                </div>
+                <!-- 新增板块按钮 -->
+                <button class="btn-primary shadow-sm" onclick="openAddBigDataModuleModal()">
+                    <i class="fa-solid fa-plus"></i> 新增监督板块
+                </button>
+            </div>
+
+            <!-- 五大板块卡片 -->
+            <div id="bigDataModulesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- 农村集体"三资" -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="bigdataModule1">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-landmark text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 module-name">农村集体"三资"</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditBigDataModuleModal(1, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm module-desc line-clamp-2">农村集体资金、资产、资源监督模型</p>
+                    <button class="mt-4 text-sm text-primary hover:text-primary/80 w-full text-center py-1 border border-primary/20 rounded-lg transition-colors" onclick="showSection('bigdata-3z')">查看详情 →</button>
+                </div>
+
+                <!-- 养老服务 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="bigdataModule2">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-hands-holding-circle text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 module-name">养老服务</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditBigDataModuleModal(2, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm module-desc line-clamp-2">养老补贴、机构运营等监督模型</p>
+                    <button class="mt-4 text-sm text-primary hover:text-primary/80 w-full text-center py-1 border border-primary/20 rounded-lg transition-colors" onclick="showSection('bigdata-pension')">查看详情 →</button>
+                </div>
+
+                <!-- 工程建设招投标 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="bigdataModule3">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-building-columns text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 module-name">工程建设招投标</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditBigDataModuleModal(3, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm module-desc line-clamp-2">招投标流程、参与主体监督模型</p>
+                    <button class="mt-4 text-sm text-primary hover:text-primary/80 w-full text-center py-1 border border-primary/20 rounded-lg transition-colors" onclick="showSection('bigdata-bidding')">查看详情 →</button>
+                </div>
+
+                <!-- 社会救助 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="bigdataModule4">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-handshake-angle text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 module-name">社会救助</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditBigDataModuleModal(4, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm module-desc line-clamp-2">低保、特困、临时救助监督模型</p>
+                    <button class="mt-4 text-sm text-primary hover:text-primary/80 w-full text-center py-1 border border-primary/20 rounded-lg transition-colors" onclick="showSection('bigdata-aid')">查看详情 →</button>
+                </div>
+
+                <!-- 行政执法 -->
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer" id="bigdataModule5">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-gavel text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 module-name">行政执法</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditBigDataModuleModal(5, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm module-desc line-clamp-2">行政处罚、执法流程监督模型</p>
+                    <button class="mt-4 text-sm text-primary hover:text-primary/80 w-full text-center py-1 border border-primary/20 rounded-lg transition-colors" onclick="showSection('bigdata-law')">查看详情 →</button>
+                </div>
+            </div>
+
+            <!-- 新增/编辑大数据板块模态框 -->
+            <div id="bigDataModuleModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+                <div class="bg-white rounded-xl p-6 w-full max-w-md modal-enter">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 id="bigDataModuleModalTitle" class="text-xl font-bold text-gray-500">新增监督板块</h3>
+                        <button class="text-gray-200 hover:text-gray-400 p-1 rounded-full hover:bg-gray-50 transition-colors" onclick="closeBigDataModuleModal()">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <form id="bigDataModuleForm">
+                        <input type="hidden" id="moduleId">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5">板块名称</label>
+                            <input type="text" id="moduleName" class="input-default" placeholder="请输入板块名称">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5">板块描述</label>
+                            <textarea id="moduleDesc" class="input-default" rows="2" placeholder="请输入板块描述"></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-400 mb-1.5">图标选择</label>
+                            <select id="moduleIcon" class="input-default">
+                                <option value="fa-landmark">地标图标</option>
+                                <option value="fa-hands-holding-circle">爱心图标</option>
+                                <option value="fa-building-columns">建筑图标</option>
+                                <option value="fa-handshake-angle">握手图标</option>
+                                <option value="fa-gavel">法槌图标</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button type="button" class="btn-secondary" onclick="closeBigDataModuleModal()">取消</button>
+                            <button type="submit" class="btn-primary shadow-sm">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 嵌入式监督模块 -->
+    <section id="embedded" class="content-section hidden">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <!-- 页面标题 -->
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('home')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回首页
+                    </button>
+                    <h1 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">政务服务核心功能</h1>
+                </div>
+                <!-- 新增功能按钮 -->
+                <button class="embedded-btn embedded-btn-primary" id="addCardBtn">
+                    <i class="fas fa-plus"></i> 新增功能
+                </button>
+            </div>
+            <p class="text-gray-600 mb-6 text-center">高效便捷 · 精准服务</p>
+
+            <!-- 功能卡片容器 -->
+            <div class="function-container max-w-900 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="functionContainer">
+                <!-- 卡片将通过JS动态渲染 -->
+            </div>
+
+            <!-- 编辑/新增模态框 -->
+            <div class="embedded-modal" id="cardModal">
+                <div class="embedded-modal-content">
+                    <div class="embedded-modal-header">
+                        <h3 class="embedded-modal-title" id="modalTitle">新增功能卡片</h3>
+                        <button class="close-embedded-modal" id="closeModal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="cardForm">
+                        <input type="hidden" id="cardId">
+                        <div class="embedded-form-group">
+                            <label class="embedded-form-label" for="cardTitle">功能标题</label>
+                            <input type="text" class="embedded-form-input" id="cardTitle" placeholder="请输入功能标题" required>
+                        </div>
+                        <div class="embedded-form-group">
+                            <label class="embedded-form-label" for="cardIcon">选择图标</label>
+                            <select class="embedded-form-select" id="cardIcon" required>
+                                <option value="">请选择图标</option>
+                                <option value="fas fa-landmark">地标 (landmark)</option>
+                                <option value="fas fa-hands-holding-child">养老 (hands-holding-child)</option>
+                                <option value="fas fa-gavel">执法 (gavel)</option>
+                                <option value="fas fa-file-invoice">发票 (file-invoice)</option>
+                                <option value="fas fa-users">用户 (users)</option>
+                                <option value="fas fa-home">家庭 (home)</option>
+                                <option value="fas fa-clipboard-check">审批 (clipboard-check)</option>
+                                <option value="fas fa-coins">资金 (coins)</option>
+                            </select>
+                        </div>
+                        <div class="embedded-form-group">
+                            <label class="embedded-form-label" for="cardDesc">功能描述</label>
+                            <textarea class="embedded-form-textarea" id="cardDesc" placeholder="请输入功能描述" required></textarea>
+                        </div>
+                        <div class="embedded-modal-footer">
+                            <button type="button" class="embedded-btn embedded-btn-default" id="cancelBtn">取消</button>
+                            <button type="submit" class="embedded-btn embedded-btn-primary">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== 数据库详情页面 ========== -->
+    
+    <!-- 1. 公职人员库详情页 -->
+    <section id="excel1" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('database')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回数据库
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">公职人员库信息表</h2>
+                </div>
+                <button class="btn-primary shadow-sm" onclick="openAddDataModal('excel1')">
+                    <i class="fa-solid fa-plus"></i> 新增数据
+                </button>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <label class="btn-outline cursor-pointer">
+                        <i class="fa-solid fa-file-import"></i>
+                        导入数据
+                        <input type="file" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(this)">
+                    </label>
+                    <button class="btn-secondary">
+                        <i class="fa-solid fa-download"></i>
+                        导出数据
+                    </button>
+                </div>
+                <div class="relative w-full md:w-auto">
+                    <input type="text" placeholder="搜索人员信息..." class="input-default w-full md:w-64 pl-10 pr-4 py-2">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-200"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="table-header">序号</th>
+                            <th class="table-header">姓名</th>
+                            <th class="table-header">性别</th>
+                            <th class="table-header">身份证号</th>
+                            <th class="table-header">工作单位</th>
+                            <th class="table-header">职务</th>
+                            <th class="table-header">联系方式</th>
+                            <th class="table-header">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excel1TableBody">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="1">
+                            <td class="table-cell">1</td>
+                            <td class="table-cell text-gray-400">张三</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319900101XXXX</td>
+                            <td class="table-cell text-gray-400">XX区政府办公室</td>
+                            <td class="table-cell text-gray-400">副主任</td>
+                            <td class="table-cell text-gray-400">138XXXX1234</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel1', 1)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel1', 1)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="2">
+                            <td class="table-cell">2</td>
+                            <td class="table-cell text-gray-400">李四</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319910202XXXX</td>
+                            <td class="table-cell text-gray-400">XX区财政局</td>
+                            <td class="table-cell text-gray-400">科长</td>
+                            <td class="table-cell text-gray-400">139XXXX5678</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel1', 2)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel1', 2)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors" data-id="3">
+                            <td class="table-cell">3</td>
+                            <td class="table-cell text-gray-400">王五</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319920303XXXX</td>
+                            <td class="table-cell text-gray-400">XX区人社局</td>
+                            <td class="table-cell text-gray-400">科员</td>
+                            <td class="table-cell text-gray-400">137XXXX9012</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel1', 3)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel1', 3)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. 事业编制人员库详情页 -->
+    <section id="excel2" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('database')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回数据库
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">事业编制人员库信息表</h2>
+                </div>
+                <button class="btn-primary shadow-sm" onclick="openAddDataModal('excel2')">
+                    <i class="fa-solid fa-plus"></i> 新增数据
+                </button>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <label class="btn-outline cursor-pointer">
+                        <i class="fa-solid fa-file-import"></i>
+                        导入数据
+                        <input type="file" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(this)">
+                    </label>
+                    <button class="btn-secondary">
+                        <i class="fa-solid fa-download"></i>
+                        导出数据
+                    </button>
+                </div>
+                <div class="relative w-full md:w-auto">
+                    <input type="text" placeholder="搜索人员信息..." class="input-default w-full md:w-64 pl-10 pr-4 py-2">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-200"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="table-header">序号</th>
+                            <th class="table-header">姓名</th>
+                            <th class="table-header">性别</th>
+                            <th class="table-header">身份证号</th>
+                            <th class="table-header">工作单位</th>
+                            <th class="table-header">职务</th>
+                            <th class="table-header">联系方式</th>
+                            <th class="table-header">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excel2TableBody">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="1">
+                            <td class="table-cell">1</td>
+                            <td class="table-cell text-gray-400">赵六</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319890404XXXX</td>
+                            <td class="table-cell text-gray-400">XX市人民医院</td>
+                            <td class="table-cell text-gray-400">主治医师</td>
+                            <td class="table-cell text-gray-400">136XXXX3456</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel2', 1)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel2', 1)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="2">
+                            <td class="table-cell">2</td>
+                            <td class="table-cell text-gray-400">孙七</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319900505XXXX</td>
+                            <td class="table-cell text-gray-400">XX市第一中学</td>
+                            <td class="table-cell text-gray-400">教师</td>
+                            <td class="table-cell text-gray-400">135XXXX6789</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel2', 2)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel2', 2)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors" data-id="3">
+                            <td class="table-cell">3</td>
+                            <td class="table-cell text-gray-400">周八</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319910606XXXX</td>
+                            <td class="table-cell text-gray-400">XX市图书馆</td>
+                            <td class="table-cell text-gray-400">管理员</td>
+                            <td class="table-cell text-gray-400">134XXXX9012</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel2', 3)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel2', 3)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. 合同制人员库详情页 -->
+    <section id="excel3" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('database')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回数据库
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">合同制人员库信息表</h2>
+                </div>
+                <button class="btn-primary shadow-sm" onclick="openAddDataModal('excel3')">
+                    <i class="fa-solid fa-plus"></i> 新增数据
+                </button>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <label class="btn-outline cursor-pointer">
+                        <i class="fa-solid fa-file-import"></i>
+                        导入数据
+                        <input type="file" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(this)">
+                    </label>
+                    <button class="btn-secondary">
+                        <i class="fa-solid fa-download"></i>
+                        导出数据
+                    </button>
+                </div>
+                <div class="relative w-full md:w-auto">
+                    <input type="text" placeholder="搜索人员信息..." class="input-default w-full md:w-64 pl-10 pr-4 py-2">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-200"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="table-header">序号</th>
+                            <th class="table-header">姓名</th>
+                            <th class="table-header">性别</th>
+                            <th class="table-header">身份证号</th>
+                            <th class="table-header">工作单位</th>
+                            <th class="table-header">职务</th>
+                            <th class="table-header">联系方式</th>
+                            <th class="table-header">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excel3TableBody">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="1">
+                            <td class="table-cell">1</td>
+                            <td class="table-cell text-gray-400">吴九</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319930707XXXX</td>
+                            <td class="table-cell text-gray-400">XX公司行政部</td>
+                            <td class="table-cell text-gray-400">文员</td>
+                            <td class="table-cell text-gray-400">133XXXX2345</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel3', 1)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel3', 1)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="2">
+                            <td class="table-cell">2</td>
+                            <td class="table-cell text-gray-400">郑十</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319940808XXXX</td>
+                            <td class="table-cell text-gray-400">XX公司市场部</td>
+                            <td class="table-cell text-gray-400">专员</td>
+                            <td class="table-cell text-gray-400">132XXXX5678</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel3', 2)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel3', 2)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors" data-id="3">
+                            <td class="table-cell">3</td>
+                            <td class="table-cell text-gray-400">冯十一</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319950909XXXX</td>
+                            <td class="table-cell text-gray-400">XX公司技术部</td>
+                            <td class="table-cell text-gray-400">助理工程师</td>
+                            <td class="table-cell text-gray-400">131XXXX8901</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel3', 3)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel3', 3)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 教育系统管理人员库详情页 -->
+    <section id="excel4" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('database')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回数据库
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">教育系统管理人员库信息表</h2>
+                </div>
+                <button class="btn-primary shadow-sm" onclick="openAddDataModal('excel4')">
+                    <i class="fa-solid fa-plus"></i> 新增数据
+                </button>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <label class="btn-outline cursor-pointer">
+                        <i class="fa-solid fa-file-import"></i>
+                        导入数据
+                        <input type="file" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(this)">
+                    </label>
+                    <button class="btn-secondary">
+                        <i class="fa-solid fa-download"></i>
+                        导出数据
+                    </button>
+                </div>
+                <div class="relative w-full md:w-auto">
+                    <input type="text" placeholder="搜索人员信息..." class="input-default w-full md:w-64 pl-10 pr-4 py-2">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-200"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="table-header">序号</th>
+                            <th class="table-header">姓名</th>
+                            <th class="table-header">性别</th>
+                            <th class="table-header">身份证号</th>
+                            <th class="table-header">工作单位</th>
+                            <th class="table-header">职务</th>
+                            <th class="table-header">联系方式</th>
+                            <th class="table-header">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excel4TableBody">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="1">
+                            <td class="table-cell">1</td>
+                            <td class="table-cell text-gray-400">陈十二</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319881010XXXX</td>
+                            <td class="table-cell text-gray-400">XX市教育局</td>
+                            <td class="table-cell text-gray-400">科长</td>
+                            <td class="table-cell text-gray-400">130XXXX1234</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel4', 1)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel4', 1)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="2">
+                            <td class="table-cell">2</td>
+                            <td class="table-cell text-gray-400">褚十三</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319871111XXXX</td>
+                            <td class="table-cell text-gray-400">XX市第二中学</td>
+                            <td class="table-cell text-gray-400">校长</td>
+                            <td class="table-cell text-gray-400">129XXXX4567</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel4', 2)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel4', 2)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors" data-id="3">
+                            <td class="table-cell">3</td>
+                            <td class="table-cell text-gray-400">卫十四</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319861212XXXX</td>
+                            <td class="table-cell text-gray-400">XX市第三小学</td>
+                            <td class="table-cell text-gray-400">副校长</td>
+                            <td class="table-cell text-gray-400">128XXXX7890</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel4', 3)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel4', 3)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 村社干部及家属库详情页 -->
+    <section id="excel5" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('database')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回数据库
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">村社干部及家属库信息表</h2>
+                </div>
+                <button class="btn-primary shadow-sm" onclick="openAddDataModal('excel5')">
+                    <i class="fa-solid fa-plus"></i> 新增数据
+                </button>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <label class="btn-outline cursor-pointer">
+                        <i class="fa-solid fa-file-import"></i>
+                        导入数据
+                        <input type="file" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(this)">
+                    </label>
+                    <button class="btn-secondary">
+                        <i class="fa-solid fa-download"></i>
+                        导出数据
+                    </button>
+                </div>
+                <div class="relative w-full md:w-auto">
+                    <input type="text" placeholder="搜索人员信息..." class="input-default w-full md:w-64 pl-10 pr-4 py-2">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-200"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="table-header">序号</th>
+                            <th class="table-header">姓名</th>
+                            <th class="table-header">性别</th>
+                            <th class="table-header">身份证号</th>
+                            <th class="table-header">所属村社</th>
+                            <th class="table-header">职务/关系</th>
+                            <th class="table-header">联系方式</th>
+                            <th class="table-header">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excel5TableBody">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="1">
+                            <td class="table-cell">1</td>
+                            <td class="table-cell text-gray-400">蒋十五</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319850101XXXX</td>
+                            <td class="table-cell text-gray-400">XX村</td>
+                            <td class="table-cell text-gray-400">村主任</td>
+                            <td class="table-cell text-gray-400">127XXXX0123</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel5', 1)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel5', 1)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="2">
+                            <td class="table-cell">2</td>
+                            <td class="table-cell text-gray-400">沈十六</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319840202XXXX</td>
+                            <td class="table-cell text-gray-400">XX社区</td>
+                            <td class="table-cell text-gray-400">社区书记</td>
+                            <td class="table-cell text-gray-400">126XXXX3456</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel5', 2)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel5', 2)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors" data-id="3">
+                            <td class="table-cell">3</td>
+                            <td class="table-cell text-gray-400">韩十七</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319830303XXXX</td>
+                            <td class="table-cell text-gray-400">XX村</td>
+                            <td class="table-cell text-gray-400">村主任家属</td>
+                            <td class="table-cell text-gray-400">125XXXX6789</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel5', 3)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel5', 3)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 死亡人员库详情页 -->
+    <section id="excel6" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('database')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回数据库
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">死亡人员库信息表</h2>
+                </div>
+                <button class="btn-primary shadow-sm" onclick="openAddDataModal('excel6')">
+                    <i class="fa-solid fa-plus"></i> 新增数据
+                </button>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <label class="btn-outline cursor-pointer">
+                        <i class="fa-solid fa-file-import"></i>
+                        导入数据
+                        <input type="file" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(this)">
+                    </label>
+                    <button class="btn-secondary">
+                        <i class="fa-solid fa-download"></i>
+                        导出数据
+                    </button>
+                </div>
+                <div class="relative w-full md:w-auto">
+                    <input type="text" placeholder="搜索人员信息..." class="input-default w-full md:w-64 pl-10 pr-4 py-2">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-200"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="table-header">序号</th>
+                            <th class="table-header">姓名</th>
+                            <th class="table-header">性别</th>
+                            <th class="table-header">身份证号</th>
+                            <th class="table-header">户籍地址</th>
+                            <th class="table-header">死亡日期</th>
+                            <th class="table-header">注销状态</th>
+                            <th class="table-header">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excel6TableBody">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="1">
+                            <td class="table-cell">1</td>
+                            <td class="table-cell text-gray-400">杨十八</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319500404XXXX</td>
+                            <td class="table-cell text-gray-400">XX区XX路XX号</td>
+                            <td class="table-cell text-gray-400">2023-01-15</td>
+                            <td class="table-cell text-gray-400">已注销</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel6', 1)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel6', 1)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="2">
+                            <td class="table-cell">2</td>
+                            <td class="table-cell text-gray-400">朱十九</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319490505XXXX</td>
+                            <td class="table-cell text-gray-400">XX区XX街XX号</td>
+                            <td class="table-cell text-gray-400">2023-03-20</td>
+                            <td class="table-cell text-gray-400">已注销</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel6', 2)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel6', 2)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors" data-id="3">
+                            <td class="table-cell">3</td>
+                            <td class="table-cell text-gray-400">秦二十</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319480606XXXX</td>
+                            <td class="table-cell text-gray-400">XX县XX乡XX村</td>
+                            <td class="table-cell text-gray-400">2023-05-10</td>
+                            <td class="table-cell text-gray-400">已注销</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel6', 3)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel6', 3)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. 低保救助人员库详情页 -->
+    <section id="excel7" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('database')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回数据库
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">低保救助人员库信息表</h2>
+                </div>
+                <button class="btn-primary shadow-sm" onclick="openAddDataModal('excel7')">
+                    <i class="fa-solid fa-plus"></i> 新增数据
+                </button>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <label class="btn-outline cursor-pointer">
+                        <i class="fa-solid fa-file-import"></i>
+                        导入数据
+                        <input type="file" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(this)">
+                    </label>
+                    <button class="btn-secondary">
+                        <i class="fa-solid fa-download"></i>
+                        导出数据
+                    </button>
+                </div>
+                <div class="relative w-full md:w-auto">
+                    <input type="text" placeholder="搜索人员信息..." class="input-default w-full md:w-64 pl-10 pr-4 py-2">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-200"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="table-header">序号</th>
+                            <th class="table-header">姓名</th>
+                            <th class="table-header">性别</th>
+                            <th class="table-header">身份证号</th>
+                            <th class="table-header">家庭地址</th>
+                            <th class="table-header">救助类型</th>
+                            <th class="table-header">联系方式</th>
+                            <th class="table-header">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excel7TableBody">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="1">
+                            <td class="table-cell">1</td>
+                            <td class="table-cell text-gray-400">尤二十一</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319700707XXXX</td>
+                            <td class="table-cell text-gray-400">XX区XX巷XX号</td>
+                            <td class="table-cell text-gray-400">低保</td>
+                            <td class="table-cell text-gray-400">124XXXX9012</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel7', 1)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel7', 1)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-id="2">
+                            <td class="table-cell">2</td>
+                            <td class="table-cell text-gray-400">许二十二</td>
+                            <td class="table-cell text-gray-400">男</td>
+                            <td class="table-cell text-gray-400">51012319690808XXXX</td>
+                            <td class="table-cell text-gray-400">XX县XX镇XX街</td>
+                            <td class="table-cell text-gray-400">特困救助</td>
+                            <td class="table-cell text-gray-400">123XXXX2345</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel7', 2)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel7', 2)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors" data-id="3">
+                            <td class="table-cell">3</td>
+                            <td class="table-cell text-gray-400">何二十三</td>
+                            <td class="table-cell text-gray-400">女</td>
+                            <td class="table-cell text-gray-400">51012319680909XXXX</td>
+                            <td class="table-cell text-gray-400">XX区XX小区XX栋</td>
+                            <td class="table-cell text-gray-400">临时救助</td>
+                            <td class="table-cell text-gray-400">122XXXX5678</td>
+                            <td class="table-cell">
+                                <div class="flex gap-2">
+                                    <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('excel7', 3)">
+                                        <i class="fa-solid fa-edit"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('excel7', 3)">
+                                        <i class="fa-solid fa-trash"></i> 删除
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== 大数据详情页面 ========== -->
+    
+    <!-- 农村集体"三资"详情页 -->
+    <section id="bigdata-3z" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('bigdata')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回大数据模型
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">农村集体"三资"监督模型</h2>
+                </div>
+                <!-- 编辑概览数据按钮 -->
+                <button class="btn-outline shadow-sm" onclick="openEditOverviewModal('bigdata-3z')">
+                    <i class="fa-solid fa-pen-to-square"></i> 编辑概览数据
+                </button>
+            </div>
+
+            <!-- 数据概览 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">模型数量</div>
+                    <div class="text-3xl font-bold text-primary overview-models">2 <span class="text-lg font-normal text-gray-400">个</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">疑点数据</div>
+                    <div class="text-3xl font-bold text-primary overview-suspicious">100 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">问题线索</div>
+                    <div class="text-3xl font-bold text-primary overview-clues">1000 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+            </div>
+
+            <!-- 模型列表（图标化卡片） -->
+            <div class="bg-white rounded-xl shadow-card mb-4">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-500">模型详情</h3>
+                    <button class="btn-outline shadow-sm px-3 py-1.5" onclick="openAddModelModal('bigdata-3z')">
+                        <i class="fa-solid fa-plus"></i> 新增模型
+                    </button>
+                </div>
+                <div id="bigdata-3z-models-container" class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- 模型1 - 比对思路样式已全局统一 -->
+                        <div class="model-card" data-model-id="1">
+                            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                                <i class="fa-solid fa-user-friends text-primary text-2xl"></i>
+                            </div>
+                            <h4 class="font-medium text-gray-400 mb-2 model-name">村社干部亲属任公益岗未报备</h4>
+                            <div class="text-sm text-gray-300 mb-2 model-count">疑点数据：50条</div>
+                            <div class="model-idea">（预留30字左右：填写亲属关系与岗位报备信息比对思路）</div>
+                            <div class="flex gap-2">
+                                <button class="text-primary text-sm hover:text-primary/80" onclick="openEditModelModal('bigdata-3z', 1)">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i> 编辑
+                                </button>
+                                <button class="text-danger text-sm hover:text-danger/80" onclick="deleteModel('bigdata-3z', 1)">
+                                    <i class="fa-solid fa-trash text-xs"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 模型2 - 比对思路样式已全局统一 -->
+                        <div class="model-card" data-model-id="2">
+                            <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                                <i class="fa-solid fa-money-bill-wave text-primary text-2xl"></i>
+                            </div>
+                            <h4 class="font-medium text-gray-400 mb-2 model-name">村社干部及亲属违规领取补贴</h4>
+                            <div class="text-sm text-gray-300 mb-2 model-count">疑点数据：70条</div>
+                            <div class="model-idea">（预留30字左右：填写干部亲属信息与补贴领取记录比对思路）</div>
+                            <div class="flex gap-2">
+                                <button class="text-primary text-sm hover:text-primary/80" onclick="openEditModelModal('bigdata-3z', 2)">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i> 编辑
+                                </button>
+                                <button class="text-danger text-sm hover:text-danger/80" onclick="deleteModel('bigdata-3z', 2)">
+                                    <i class="fa-solid fa-trash text-xs"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 养老服务详情页 -->
+    <section id="bigdata-pension" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('bigdata')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回大数据模型
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">养老服务监督模型</h2>
+                </div>
+                <button class="btn-outline shadow-sm" onclick="openEditOverviewModal('bigdata-pension')">
+                    <i class="fa-solid fa-pen-to-square"></i> 编辑概览数据
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">模型数量</div>
+                    <div class="text-3xl font-bold text-primary overview-models">0 <span class="text-lg font-normal text-gray-400">个</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">疑点数据</div>
+                    <div class="text-3xl font-bold text-primary overview-suspicious">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">问题线索</div>
+                    <div class="text-3xl font-bold text-primary overview-clues">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-card mb-4">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-500">模型详情</h3>
+                    <button class="btn-outline shadow-sm px-3 py-1.5" onclick="openAddModelModal('bigdata-pension')">
+                        <i class="fa-solid fa-plus"></i> 新增模型
+                    </button>
+                </div>
+                <div id="bigdata-pension-models-container" class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="text-center py-8 text-gray-300">
+                            <i class="fa-solid fa-box-open text-4xl mb-2"></i>
+                            <p>暂无模型数据，点击"新增模型"添加</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 工程建设招投标详情页 -->
+    <section id="bigdata-bidding" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('bigdata')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回大数据模型
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">工程建设招投标监督模型</h2>
+                </div>
+                <button class="btn-outline shadow-sm" onclick="openEditOverviewModal('bigdata-bidding')">
+                    <i class="fa-solid fa-pen-to-square"></i> 编辑概览数据
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">模型数量</div>
+                    <div class="text-3xl font-bold text-primary overview-models">0 <span class="text-lg font-normal text-gray-400">个</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">疑点数据</div>
+                    <div class="text-3xl font-bold text-primary overview-suspicious">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">问题线索</div>
+                    <div class="text-3xl font-bold text-primary overview-clues">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-card mb-4">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-500">模型详情</h3>
+                    <button class="btn-outline shadow-sm px-3 py-1.5" onclick="openAddModelModal('bigdata-bidding')">
+                        <i class="fa-solid fa-plus"></i> 新增模型
+                    </button>
+                </div>
+                <div id="bigdata-bidding-models-container" class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="text-center py-8 text-gray-300">
+                            <i class="fa-solid fa-box-open text-4xl mb-2"></i>
+                            <p>暂无模型数据，点击"新增模型"添加</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 社会救助详情页 -->
+    <section id="bigdata-aid" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('bigdata')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回大数据模型
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">社会救助监督模型</h2>
+                </div>
+                <button class="btn-outline shadow-sm" onclick="openEditOverviewModal('bigdata-aid')">
+                    <i class="fa-solid fa-pen-to-square"></i> 编辑概览数据
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">模型数量</div>
+                    <div class="text-3xl font-bold text-primary overview-models">0 <span class="text-lg font-normal text-gray-400">个</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">疑点数据</div>
+                    <div class="text-3xl font-bold text-primary overview-suspicious">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">问题线索</div>
+                    <div class="text-3xl font-bold text-primary overview-clues">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-card mb-4">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-500">模型详情</h3>
+                    <button class="btn-outline shadow-sm px-3 py-1.5" onclick="openAddModelModal('bigdata-aid')">
+                        <i class="fa-solid fa-plus"></i> 新增模型
+                    </button>
+                </div>
+                <div id="bigdata-aid-models-container" class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="text-center py-8 text-gray-300">
+                            <i class="fa-solid fa-box-open text-4xl mb-2"></i>
+                            <p>暂无模型数据，点击"新增模型"添加</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 行政执法详情页 -->
+    <section id="bigdata-law" class="content-section hidden">
+        <div class="container mx-auto px-4 py-8 max-w-7xl">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center">
+                    <button class="text-primary mr-4 hover:text-primary/80 transition-colors" onclick="showSection('bigdata')">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> 返回大数据模型
+                    </button>
+                    <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-gray-500">行政执法监督模型</h2>
+                </div>
+                <button class="btn-outline shadow-sm" onclick="openEditOverviewModal('bigdata-law')">
+                    <i class="fa-solid fa-pen-to-square"></i> 编辑概览数据
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">模型数量</div>
+                    <div class="text-3xl font-bold text-primary overview-models">0 <span class="text-lg font-normal text-gray-400">个</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">疑点数据</div>
+                    <div class="text-3xl font-bold text-primary overview-suspicious">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card p-6 card-hover">
+                    <div class="text-gray-300 text-sm mb-1">问题线索</div>
+                    <div class="text-3xl font-bold text-primary overview-clues">0 <span class="text-lg font-normal text-gray-400">条</span></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-card mb-4">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-500">模型详情</h3>
+                    <button class="btn-outline shadow-sm px-3 py-1.5" onclick="openAddModelModal('bigdata-law')">
+                        <i class="fa-solid fa-plus"></i> 新增模型
+                    </button>
+                </div>
+                <div id="bigdata-law-models-container" class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="text-center py-8 text-gray-300">
+                            <i class="fa-solid fa-box-open text-4xl mb-2"></i>
+                            <p>暂无模型数据，点击"新增模型"添加</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== 公共模态框 ========== -->
+    
+    <!-- 模型新增/编辑模态框（通用）- 新增比对思路输入项 -->
+    <div id="modelModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md modal-enter">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modelModalTitle" class="text-xl font-bold text-gray-500">新增模型</h3>
+                <button class="text-gray-200 hover:text-gray-400 p-1 rounded-full hover:bg-gray-50 transition-colors" onclick="closeModelModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="modelForm">
+                <input type="hidden" id="modelSectionId">
+                <input type="hidden" id="modelId">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">模型名称</label>
+                    <input type="text" id="modelNameInput" class="input-default" placeholder="请输入模型名称">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">疑点数据条数</label>
+                    <input type="number" id="modelCountInput" class="input-default" placeholder="请输入疑点数据条数" min="0">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">比对思路（30字左右）</label>
+                    <textarea id="modelIdeaInput" class="input-default" rows="2" placeholder="请输入模型比对思路，控制在30字左右"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">图标选择</label>
+                    <select id="modelIconInput" class="input-default">
+                        <option value="fa-user-friends">人员图标</option>
+                        <option value="fa-money-bill-wave">金额图标</option>
+                        <option value="fa-wheelchair">残疾人图标</option>
+                        <option value="fa-bed">床位图标</option>
+                        <option value="fa-gift">礼物图标</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="btn-secondary" onclick="closeModelModal()">取消</button>
+                    <button type="submit" class="btn-primary shadow-sm">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 概览数据编辑模态框 -->
+    <div id="overviewModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md modal-enter">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="overviewModalTitle" class="text-xl font-bold text-gray-500">编辑概览数据</h3>
+                <button class="text-gray-200 hover:text-gray-400 p-1 rounded-full hover:bg-gray-50 transition-colors" onclick="closeOverviewModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="overviewForm">
+                <input type="hidden" id="overviewSectionId">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">模型数量</label>
+                    <input type="number" id="overviewModelsInput" class="input-default" placeholder="请输入模型数量" min="0">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">疑点数据条数</label>
+                    <input type="number" id="overviewSuspiciousInput" class="input-default" placeholder="请输入疑点数据条数" min="0">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-400 mb-1.5">问题线索条数</label>
+                    <input type="number" id="overviewCluesInput" class="input-default" placeholder="请输入问题线索条数" min="0">
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="btn-secondary" onclick="closeOverviewModal()">取消</button>
+                    <button type="submit" class="btn-primary shadow-sm">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 新增/编辑数据模态框（所有库共用） -->
+    <div id="dataModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-6 w-full max-w-lg modal-enter">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="dataModalTitle" class="text-xl font-bold text-gray-500">新增数据</h3>
+                <button class="text-gray-200 hover:text-gray-400 p-1 rounded-full hover:bg-gray-50 transition-colors" onclick="closeDataModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="dataForm">
+                <input type="hidden" id="dataTableId">
+                <input type="hidden" id="dataId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1.5">姓名</label>
+                        <input type="text" id="dataName" class="input-default" placeholder="请输入姓名">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1.5">性别</label>
+                        <select id="dataGender" class="input-default">
+                            <option value="">请选择</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1.5">身份证号</label>
+                        <input type="text" id="dataIdCard" class="input-default" placeholder="请输入身份证号">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1.5">联系方式</label>
+                        <input type="text" id="dataPhone" class="input-default" placeholder="请输入联系方式">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-400 mb-1.5">工作单位/所属地址</label>
+                        <input type="text" id="dataCompany" class="input-default" placeholder="请输入工作单位或所属地址">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-400 mb-1.5">职务/救助类型</label>
+                        <input type="text" id="dataPosition" class="input-default" placeholder="请输入职务或救助类型等信息">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="btn-secondary" onclick="closeDataModal()">取消</button>
+                    <button type="submit" class="btn-primary shadow-sm">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript 功能实现 -->
+    <script>
+        // 全局变量
+        let currentSection = 'home';
+        let embeddedFunctionCards = [
+            {
+                id: 1,
+                title: "农村集体'三资'",
+                icon: "fas fa-landmark",
+                desc: "统筹管理农村集体资金、资产、资源，实现透明化、规范化监管"
+            },
+            {
+                id: 2,
+                title: "养老服务",
+                icon: "fas fa-hands-holding-child",
+                desc: "提供养老政策咨询、服务申请、机构查询等一站式养老便民服务"
+            },
+            {
+                id: 3,
+                title: "执法审批",
+                icon: "fas fa-gavel",
+                desc: "规范执法流程，简化审批环节，实现执法审批全流程线上办理"
+            }
+        ];
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示首页
+            showSection('home');
+            
+            // 初始化嵌入式监督模块
+            initEmbeddedModule();
+            
+            // 绑定表单提交事件
+            document.getElementById('bigDataModuleForm')?.addEventListener('submit', saveBigDataModule);
+            document.getElementById('databaseForm')?.addEventListener('submit', saveDatabase);
+            document.getElementById('modelForm')?.addEventListener('submit', saveModel);
+            document.getElementById('overviewForm')?.addEventListener('submit', saveOverviewData);
+            document.getElementById('dataForm')?.addEventListener('submit', saveData);
+        });
+
+        // 切换页面显示
+        function showSection(sectionId) {
+            // 隐藏所有content-section和首页
+            document.querySelectorAll('.content-section, #home').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // 找到目标section并显示
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                currentSection = sectionId;
+                // 平滑滚动到顶部
+                window.scrollTo({ 
+                    top: 0, 
+                    behavior: 'smooth' 
+                });
+            } else {
+                // 如果找不到目标页面，默认返回首页
+                document.getElementById('home').classList.remove('hidden');
+                currentSection = 'home';
+            }
+        }
+
+        // ========== 数据库模块功能 ==========
+        function openAddDatabaseModal() {
+            document.getElementById('databaseModalTitle').textContent = '新增数据库';
+            document.getElementById('databaseForm').reset();
+            document.getElementById('dbId').value = '';
+            document.getElementById('databaseModal').classList.remove('hidden');
+        }
+        
+        function openEditDatabaseModal(dbId, event) {
+            // 阻止事件冒泡，避免卡片点击触发
+            event.stopPropagation();
+            
+            const card = document.getElementById(`dbCard${dbId}`);
+            if (card) {
+                const name = card.querySelector('.db-name').textContent;
+                const desc = card.querySelector('.db-desc').textContent;
+                const count = card.querySelector('.db-count').textContent.replace(/[^0-9]/g, '');
+                
+                // 填充表单
+                document.getElementById('dbName').value = name;
+                document.getElementById('dbDesc').value = desc;
+                document.getElementById('dbCount').value = count;
+            }
+            
+            document.getElementById('databaseModalTitle').textContent = '编辑数据库';
+            document.getElementById('databaseModal').classList.remove('hidden');
+        }
+        
+        function closeDatabaseModal() {
+            document.getElementById('databaseModal').classList.add('hidden');
+        }
+        
+        function saveDatabase(e) {
+            e.preventDefault();
+            
+            const dbId = document.getElementById('dbId').value;
+            const dbName = document.getElementById('dbName').value.trim();
+            const dbDesc = document.getElementById('dbDesc').value.trim();
+            const dbCount = document.getElementById('dbCount').value;
+            
+            if (!dbName) {
+                alert('请输入数据库名称');
+                return;
+            }
+            
+            if (dbId) {
+                // 编辑现有数据库
+                const card = document.getElementById(`dbCard${dbId}`);
+                if (card) {
+                    card.querySelector('.db-name').textContent = dbName;
+                    card.querySelector('.db-desc').textContent = dbDesc;
+                    card.querySelector('.db-count').textContent = `已导入：${dbCount} 条`;
+                }
+            } else {
+                // 新增数据库
+                const container = document.getElementById('databaseCardsContainer');
+                const newDbId = container.children.length + 1;
+                
+                // 创建新数据库卡片
+                const newCard = document.createElement('div');
+                newCard.className = 'bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer';
+                newCard.id = `dbCard${newDbId}`;
+                newCard.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-database text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 db-name">${dbName}</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditDatabaseModal(${newDbId}, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm db-desc line-clamp-2">${dbDesc}</p>
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-primary/5 text-primary px-2 py-1 rounded-full db-count">已导入：${dbCount} 条</span>
+                        <button class="text-sm text-primary hover:text-primary/80 flex items-center gap-1" onclick="showSection('excel${newDbId}')">
+                            查看详情 <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(newCard);
+            }
+            
+            closeDatabaseModal();
+            alert('保存成功！');
+        }
+        
+        function handleExcelUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                // 显示上传成功提示
+                const uploadStatus = document.getElementById('uploadStatus');
+                uploadStatus.classList.remove('hidden');
+                
+                // 3秒后隐藏提示
+                setTimeout(() => {
+                    uploadStatus.classList.add('hidden');
+                }, 3000);
+                
+                // 清空文件输入
+                input.value = '';
+            }
+        }
+
+        // ========== 大数据监督模型功能 ==========
+        function openAddBigDataModuleModal() {
+            document.getElementById('bigDataModuleForm').reset();
+            document.getElementById('moduleId').value = '';
+            document.getElementById('bigDataModuleModalTitle').textContent = '新增监督板块';
+            document.getElementById('bigDataModuleModal').classList.remove('hidden');
+        }
+
+        function openEditBigDataModuleModal(moduleId, event) {
+            if (event) event.stopPropagation();
+            
+            const moduleCard = document.getElementById(`bigdataModule${moduleId}`);
+            if (!moduleCard) return;
+            
+            document.getElementById('moduleId').value = moduleId;
+            document.getElementById('moduleName').value = moduleCard.querySelector('.module-name').textContent;
+            document.getElementById('moduleDesc').value = moduleCard.querySelector('.module-desc').textContent.trim();
+            
+            const iconClass = moduleCard.querySelector('i[class^="fa-solid"]').classList[1];
+            document.getElementById('moduleIcon').value = iconClass;
+            
+            document.getElementById('bigDataModuleModalTitle').textContent = '编辑监督板块';
+            document.getElementById('bigDataModuleModal').classList.remove('hidden');
+        }
+
+        function closeBigDataModuleModal() {
+            document.getElementById('bigDataModuleModal').classList.add('hidden');
+        }
+
+        // 保存大数据板块（新增/编辑）
+        function saveBigDataModule(e) {
+            e.preventDefault();
+            
+            const moduleId = document.getElementById('moduleId').value;
+            const moduleName = document.getElementById('moduleName').value.trim();
+            const moduleDesc = document.getElementById('moduleDesc').value.trim();
+            const moduleIcon = document.getElementById('moduleIcon').value;
+            
+            if (!moduleName) {
+                alert('请输入板块名称');
+                return;
+            }
+            
+            if (moduleId) {
+                // 编辑现有板块
+                const moduleCard = document.getElementById(`bigdataModule${moduleId}`);
+                if (moduleCard) {
+                    moduleCard.querySelector('.module-name').textContent = moduleName;
+                    moduleCard.querySelector('.module-desc').textContent = moduleDesc;
+                    moduleCard.querySelector('i[class^="fa-solid"]').className = `fa-solid ${moduleIcon} text-primary text-xl`;
+                }
+            } else {
+                // 新增板块
+                const container = document.getElementById('bigDataModulesContainer');
+                const newModuleId = container.children.length + 1;
+                
+                // 创建新板块卡片
+                const newCard = document.createElement('div');
+                newCard.className = 'bg-white rounded-xl shadow-card p-6 card-hover cursor-pointer';
+                newCard.id = `bigdataModule${newModuleId}`;
+                newCard.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                                <i class="fa-solid ${moduleIcon} text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-500 module-name">${moduleName}</h3>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="text-gray-200 hover:text-primary p-1 rounded-full hover:bg-primary/5 transition-colors" onclick="openEditBigDataModuleModal(${newModuleId}, event)">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm module-desc line-clamp-2">${moduleDesc}</p>
+                    <button class="mt-4 text-sm text-primary hover:text-primary/80 w-full text-center py-1 border border-primary/20 rounded-lg transition-colors" onclick="alert('详情页面未实现')">查看详情 →</button>
+                `;
+                container.appendChild(newCard);
+            }
+            
+            closeBigDataModuleModal();
+            alert('保存成功！');
+        }
+
+        // ========== 模型管理功能 ==========
+        function openAddModelModal(sectionId) {
+            document.getElementById('modelForm').reset();
+            document.getElementById('modelId').value = '';
+            document.getElementById('modelSectionId').value = sectionId;
+            document.getElementById('modelModalTitle').textContent = '新增模型';
+            document.getElementById('modelModal').classList.remove('hidden');
+        }
+
+        function openEditModelModal(sectionId, modelId) {
+            const container = document.getElementById(`${sectionId}-models-container`);
+            const modelCard = container ? container.querySelector(`[data-model-id="${modelId}"]`) : null;
+            
+            if (!modelCard) return;
+            
+            document.getElementById('modelSectionId').value = sectionId;
+            document.getElementById('modelId').value = modelId;
+            document.getElementById('modelNameInput').value = modelCard.querySelector('.model-name').textContent;
+            
+            const countText = modelCard.querySelector('.model-count').textContent;
+            const count = countText.replace('疑点数据：', '').replace('条', '');
+            document.getElementById('modelCountInput').value = count;
+            
+            // 读取比对思路
+            const ideaText = modelCard.querySelector('.model-idea').textContent.trim();
+            document.getElementById('modelIdeaInput').value = ideaText.replace(/（预留30字左右：|）/g, '');
+            
+            const iconClass = modelCard.querySelector('i[class^="fa-solid"]').classList[1];
+            document.getElementById('modelIconInput').value = iconClass;
+            
+            document.getElementById('modelModalTitle').textContent = '编辑模型';
+            document.getElementById('modelModal').classList.remove('hidden');
+        }
+
+        function closeModelModal() {
+            document.getElementById('modelModal').classList.add('hidden');
+        }
+
+        // 保存模型（新增/编辑）- 完善比对思路保存
+        function saveModel(e) {
+            e.preventDefault();
+            
+            const sectionId = document.getElementById('modelSectionId').value;
+            const modelId = document.getElementById('modelId').value;
+            const modelName = document.getElementById('modelNameInput').value.trim();
+            const modelCount = document.getElementById('modelCountInput').value;
+            const modelIdea = document.getElementById('modelIdeaInput').value.trim() || '请填写比对思路（30字左右）';
+            const modelIcon = document.getElementById('modelIconInput').value;
+            
+            if (!modelName) {
+                alert('请输入模型名称');
+                return;
+            }
+            if (!modelCount || isNaN(modelCount) || modelCount < 0) {
+                alert('请输入有效的疑点数据条数（非负数字）');
+                return;
+            }
+            
+            const container = document.getElementById(`${sectionId}-models-container`);
+            const gridContainer = container ? container.querySelector('.grid') : null;
+            
+            if (!gridContainer) return;
+
+            // 清空空状态提示
+            if (!modelId && gridContainer.querySelector('.text-center.py-8')) {
+                gridContainer.innerHTML = '';
+            }
+            
+            if (modelId) {
+                // 编辑现有模型
+                const modelCard = gridContainer.querySelector(`[data-model-id="${modelId}"]`);
+                if (modelCard) {
+                    modelCard.querySelector('.model-name').textContent = modelName;
+                    modelCard.querySelector('.model-count').textContent = `疑点数据：${modelCount}条`;
+                    modelCard.querySelector('.model-idea').textContent = modelIdea;
+                    modelCard.querySelector('i[class^="fa-solid"]').className = `fa-solid ${modelIcon} text-primary text-2xl`;
+                }
+            } else {
+                // 新增模型
+                const modelCards = gridContainer.querySelectorAll('.model-card');
+                const newModelId = modelCards.length + 1;
+                
+                const newCard = document.createElement('div');
+                newCard.className = 'model-card';
+                newCard.setAttribute('data-model-id', newModelId);
+                newCard.innerHTML = `
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <i class="fa-solid ${modelIcon} text-primary text-2xl"></i>
+                    </div>
+                    <h4 class="font-medium text-gray-400 mb-2 model-name">${modelName}</h4>
+                    <div class="text-sm text-gray-300 mb-2 model-count">疑点数据：${modelCount}条</div>
+                    <div class="model-idea">${modelIdea}</div>
+                    <div class="flex gap-2">
+                        <button class="text-primary text-sm hover:text-primary/80" onclick="openEditModelModal('${sectionId}', ${newModelId})">
+                            <i class="fa-solid fa-pen-to-square text-xs"></i> 编辑
+                        </button>
+                        <button class="text-danger text-sm hover:text-danger/80" onclick="deleteModel('${sectionId}', ${newModelId})">
+                            <i class="fa-solid fa-trash text-xs"></i> 删除
+                        </button>
+                    </div>
+                `;
+                
+                gridContainer.appendChild(newCard);
+                
+                // 更新模型数量
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const modelsElement = section.querySelector('.overview-models');
+                    if (modelsElement) {
+                        const currentCount = parseInt(modelsElement.textContent.replace(/[^0-9]/g, '')) || 0;
+                        modelsElement.innerHTML = `${currentCount + 1} <span class="text-lg font-normal text-gray-400">个</span>`;
+                    }
+                }
+            }
+            
+            closeModelModal();
+            alert('模型保存成功！');
+        }
+
+        // 删除模型
+        function deleteModel(sectionId, modelId) {
+            if (!confirm('确定要删除这个模型吗？删除后无法恢复！')) return;
+            
+            const container = document.getElementById(`${sectionId}-models-container`);
+            const gridContainer = container ? container.querySelector('.grid') : null;
+            const modelCard = gridContainer ? gridContainer.querySelector(`[data-model-id="${modelId}"]`) : null;
+            
+            if (modelCard) {
+                modelCard.remove();
+                
+                // 显示空状态
+                if (gridContainer.querySelectorAll('.model-card').length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="text-center py-8 text-gray-300">
+                            <i class="fa-solid fa-box-open text-4xl mb-2"></i>
+                            <p>暂无模型数据，点击"新增模型"添加</p>
+                        </div>
+                    `;
+                }
+                
+                // 更新模型数量
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const modelsElement = section.querySelector('.overview-models');
+                    if (modelsElement) {
+                        const currentCount = parseInt(modelsElement.textContent.replace(/[^0-9]/g, '')) || 1;
+                        modelsElement.innerHTML = `${Math.max(0, currentCount - 1)} <span class="text-lg font-normal text-gray-400">个</span>`;
+                    }
+                }
+                
+                alert('模型删除成功！');
+            }
+        }
+
+        // ========== 概览数据编辑功能 ==========
+        function openEditOverviewModal(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            
+            const modelsCount = section.querySelector('.overview-models').textContent.replace(/[^0-9]/g, '');
+            const suspiciousCount = section.querySelector('.overview-suspicious').textContent.replace(/[^0-9]/g, '');
+            const cluesCount = section.querySelector('.overview-clues').textContent.replace(/[^0-9]/g, '');
+            
+            document.getElementById('overviewSectionId').value = sectionId;
+            document.getElementById('overviewModelsInput').value = modelsCount;
+            document.getElementById('overviewSuspiciousInput').value = suspiciousCount;
+            document.getElementById('overviewCluesInput').value = cluesCount;
+            
+            document.getElementById('overviewModalTitle').textContent = '编辑概览数据';
+            document.getElementById('overviewModal').classList.remove('hidden');
+        }
+
+        function closeOverviewModal() {
+            document.getElementById('overviewModal').classList.add('hidden');
+        }
+
+        // 保存概览数据
+        function saveOverviewData(e) {
+            e.preventDefault();
+            
+            const sectionId = document.getElementById('overviewSectionId').value;
+            const modelsCount = document.getElementById('overviewModelsInput').value.trim();
+            const suspiciousCount = document.getElementById('overviewSuspiciousInput').value.trim();
+            const cluesCount = document.getElementById('overviewCluesInput').value.trim();
+            
+            if (!modelsCount || isNaN(modelsCount) || modelsCount < 0) {
+                alert('请输入有效的模型数量（非负数字）');
+                return;
+            }
+            if (!suspiciousCount || isNaN(suspiciousCount) || suspiciousCount < 0) {
+                alert('请输入有效的疑点数据条数（非负数字）');
+                return;
+            }
+            if (!cluesCount || isNaN(cluesCount) || cluesCount < 0) {
+                alert('请输入有效的问题线索条数（非负数字）');
+                return;
+            }
+            
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const modelsElement = section.querySelector('.overview-models');
+                const suspiciousElement = section.querySelector('.overview-suspicious');
+                const cluesElement = section.querySelector('.overview-clues');
+                
+                if (modelsElement) {
+                    modelsElement.innerHTML = `${modelsCount} <span class="text-lg font-normal text-gray-400">个</span>`;
+                }
+                if (suspiciousElement) {
+                    suspiciousElement.innerHTML = `${suspiciousCount} <span class="text-lg font-normal text-gray-400">条</span>`;
+                }
+                if (cluesElement) {
+                    cluesElement.innerHTML = `${cluesCount} <span class="text-lg font-normal text-gray-400">条</span>`;
+                }
+            }
+            
+            closeOverviewModal();
+            alert('概览数据保存成功！');
+        }
+
+        // ========== 数据表管理功能 ==========
+        function openAddDataModal(tableId) {
+            document.getElementById('dataModalTitle').textContent = '新增数据';
+            document.getElementById('dataForm').reset();
+            document.getElementById('dataTableId').value = tableId;
+            document.getElementById('dataId').value = '';
+            document.getElementById('dataModal').classList.remove('hidden');
+        }
+        
+        function openEditDataModal(tableId, dataId) {
+            document.getElementById('dataModalTitle').textContent = '编辑数据';
+            document.getElementById('dataTableId').value = tableId;
+            document.getElementById('dataId').value = dataId;
+            
+            // 从表格中获取数据填充表单
+            const row = document.querySelector(`#${tableId}TableBody tr[data-id="${dataId}"]`);
+            if (row) {
+                const cells = row.querySelectorAll('td');
+                document.getElementById('dataName').value = cells[1].textContent;
+                document.getElementById('dataGender').value = cells[2].textContent;
+                document.getElementById('dataIdCard').value = cells[3].textContent;
+                document.getElementById('dataCompany').value = cells[4].textContent;
+                document.getElementById('dataPosition').value = cells[5].textContent;
+                document.getElementById('dataPhone').value = cells[6] ? cells[6].textContent : '';
+            }
+            
+            document.getElementById('dataModal').classList.remove('hidden');
+        }
+        
+        function closeDataModal() {
+            document.getElementById('dataModal').classList.add('hidden');
+        }
+        
+        function deleteData(tableId, dataId) {
+            if (confirm('确定要删除这条数据吗？删除后将无法恢复。')) {
+                const row = document.querySelector(`#${tableId}TableBody tr[data-id="${dataId}"]`);
+                if (row) {
+                    // 添加删除动画
+                    row.style.animation = 'fadeOut 0.3s ease-out forwards';
+                    setTimeout(() => {
+                        row.remove();
+                        // 更新序号
+                        updateTableSerialNumber(tableId);
+                    }, 300);
+                }
+            }
+        }
+        
+        function saveData(e) {
+            e.preventDefault();
+            
+            const tableId = document.getElementById('dataTableId').value;
+            const dataId = document.getElementById('dataId').value;
+            const name = document.getElementById('dataName').value.trim();
+            const gender = document.getElementById('dataGender').value;
+            const idCard = document.getElementById('dataIdCard').value.trim();
+            const phone = document.getElementById('dataPhone').value.trim();
+            const company = document.getElementById('dataCompany').value.trim();
+            const position = document.getElementById('dataPosition').value.trim();
+            
+            if (!name || !gender || !idCard) {
+                alert('请填写必填字段（姓名、性别、身份证号）');
+                return;
+            }
+            
+            const tableBody = document.getElementById(`${tableId}TableBody`);
+            
+            if (dataId) {
+                // 编辑现有数据
+                const row = tableBody.querySelector(`tr[data-id="${dataId}"]`);
+                if (row) {
+                    const cells = row.querySelectorAll('td');
+                    cells[1].textContent = name;
+                    cells[2].textContent = gender;
+                    cells[3].textContent = idCard;
+                    cells[4].textContent = company;
+                    cells[5].textContent = position;
+                    if (cells[6]) cells[6].textContent = phone;
+                }
+            } else {
+                // 新增数据
+                const rows = tableBody.querySelectorAll('tr');
+                const newId = rows.length + 1;
+                
+                const newRow = document.createElement('tr');
+                newRow.className = 'border-b border-gray-50 hover:bg-gray-50/50 transition-colors';
+                newRow.setAttribute('data-id', newId);
+                newRow.innerHTML = `
+                    <td class="table-cell">${newId}</td>
+                    <td class="table-cell text-gray-400">${name}</td>
+                    <td class="table-cell text-gray-400">${gender}</td>
+                    <td class="table-cell text-gray-400">${idCard}</td>
+                    <td class="table-cell text-gray-400">${company}</td>
+                    <td class="table-cell text-gray-400">${position}</td>
+                    <td class="table-cell text-gray-400">${phone}</td>
+                    <td class="table-cell">
+                        <div class="flex gap-2">
+                            <button class="text-primary hover:text-primary/80 text-xs flex items-center gap-1" onclick="openEditDataModal('${tableId}', ${newId})">
+                                <i class="fa-solid fa-edit"></i> 编辑
+                            </button>
+                            <button class="text-danger hover:text-danger/80 text-xs flex items-center gap-1" onclick="deleteData('${tableId}', ${newId})">
+                                <i class="fa-solid fa-trash"></i> 删除
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(newRow);
+            }
+            
+            closeDataModal();
+            alert('数据保存成功！');
+        }
+        
+        // 更新表格序号
+        function updateTableSerialNumber(tableId) {
+            const rows = document.querySelectorAll(`#${tableId}TableBody tr`);
+            rows.forEach((row, index) => {
+                row.querySelector('td:first-child').textContent = index + 1;
+                row.setAttribute('data-id', index + 1);
+            });
+        }
+
+        // ========== 嵌入式监督模块功能 ==========
+        function initEmbeddedModule() {
+            const functionContainer = document.getElementById('functionContainer');
+            const cardModal = document.getElementById('cardModal');
+            const cardForm = document.getElementById('cardForm');
+            const addCardBtn = document.getElementById('addCardBtn');
+            const closeModal = document.getElementById('closeModal');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const modalTitle = document.getElementById('modalTitle');
+            const cardId = document.getElementById('cardId');
+            const cardTitleInput = document.getElementById('cardTitle');
+            const cardIconInput = document.getElementById('cardIcon');
+            const cardDescInput = document.getElementById('cardDesc');
+
+            // 初始化渲染卡片
+            renderEmbeddedCards();
+
+            // 渲染卡片列表
+            function renderEmbeddedCards() {
+                if (!functionContainer) return;
+                
+                functionContainer.innerHTML = '';
+                embeddedFunctionCards.forEach(card => {
+                    // 为每个卡片分配不同的图标颜色
+                    let iconColorClass = 'icon-blue';
+                    let iconIndex = card.id % 5;
+                    if (iconIndex === 1) iconColorClass = 'icon-green';
+                    else if (iconIndex === 2) iconColorClass = 'icon-purple';
+                    else if (iconIndex === 3) iconColorClass = 'icon-red';
+                    else if (iconIndex === 4) iconColorClass = 'icon-orange';
+                    
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'function-card';
+                    cardElement.innerHTML = `
+                        <div class="card-actions">
+                            <button class="card-action-btn edit" data-id="${card.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="card-action-btn delete" data-id="${card.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="card-icon ${iconColorClass}">
+                            <i class="${card.icon}"></i>
+                        </div>
+                        <h3 class="card-title">${card.title}</h3>
+                        <p class="card-desc">${card.desc}</p>
+                    `;
+                    functionContainer.appendChild(cardElement);
+                });
+
+                // 绑定编辑事件
+                document.querySelectorAll('.card-action-btn.edit').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.getAttribute('data-id'));
+                        editEmbeddedCard(id);
+                    });
+                });
+
+                // 绑定删除事件
+                document.querySelectorAll('.card-action-btn.delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.getAttribute('data-id'));
+                        deleteEmbeddedCard(id);
+                    });
+                });
+            }
+
+            // 打开新增卡片模态框
+            addCardBtn.addEventListener('click', () => {
+                modalTitle.textContent = '新增功能卡片';
+                cardForm.reset();
+                cardId.value = '';
+                cardModal.classList.add('show');
+            });
+
+            // 关闭模态框
+            closeModal.addEventListener('click', () => {
+                cardModal.classList.remove('show');
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                cardModal.classList.remove('show');
+            });
+
+            // 点击模态框外部关闭
+            cardModal.addEventListener('click', (e) => {
+                if (e.target === cardModal) {
+                    cardModal.classList.remove('show');
+                }
+            });
+
+            // 表单提交
+            cardForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const cardData = {
+                    title: cardTitleInput.value.trim(),
+                    icon: cardIconInput.value,
+                    desc: cardDescInput.value.trim()
+                };
+
+                if (cardId.value) {
+                    // 编辑模式
+                    const id = parseInt(cardId.value);
+                    const index = embeddedFunctionCards.findIndex(card => card.id === id);
+                    if (index !== -1) {
+                        embeddedFunctionCards[index] = { ...embeddedFunctionCards[index], ...cardData };
+                    }
+                } else {
+                    // 新增模式
+                    const newId = embeddedFunctionCards.length > 0 
+                        ? Math.max(...embeddedFunctionCards.map(card => card.id)) + 1 
+                        : 1;
+                    embeddedFunctionCards.push({
+                        id: newId,
+                        ...cardData
+                    });
+                }
+
+                // 重新渲染
+                renderEmbeddedCards();
+                // 关闭模态框
+                cardModal.classList.remove('show');
+            });
+
+            // 编辑卡片
+            function editEmbeddedCard(id) {
+                const card = embeddedFunctionCards.find(card => card.id === id);
+                if (card) {
+                    modalTitle.textContent = '编辑功能卡片';
+                    cardId.value = card.id;
+                    cardTitleInput.value = card.title;
+                    cardIconInput.value = card.icon;
+                    cardDescInput.value = card.desc;
+                    cardModal.classList.add('show');
+                }
+            }
+
+            // 删除卡片
+            function deleteEmbeddedCard(id) {
+                if (confirm('确定要删除这个功能卡片吗？')) {
+                    embeddedFunctionCards = embeddedFunctionCards.filter(card => card.id !== id);
+                    renderEmbeddedCards();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
